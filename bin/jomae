@@ -2,15 +2,16 @@
 set -Ceu
 
 ARGS=${@:2}
-EMAIL="kbaba1001@users.noreply.github.com"
-JOMAE_DIR=/mnt/g/マイドライブ/パスワード
-EDITOR=vim
+if [ -z $JOMAE_EMAIL ] || [ -z $JOMAE_DIR ] || [ -z $JOMAE_EDITOR ]; then
+  echo "You should set JOMAE_EMAIL,JOMAE_DIR,JOMAE_EDITOR"
+  exit 1
+fi
 
 case ${1} in
 "setup") ##
   mkdir -p $JOMAE_DIR
   echo "url,id,password,memo" > $JOMAE_DIR/password.csv
-  gpg --encrypt --recipient $EMAIL $JOMAE_DIR/password.csv
+  gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
   rm $JOMAE_DIR/password.csv
 ;;
 "search" | "s") ##
@@ -37,13 +38,13 @@ case ${1} in
 "add") ##
   gpg --decrypt --output $JOMAE_DIR/password.csv $JOMAE_DIR/password.csv.gpg
   echo ${2} >> $JOMAE_DIR/password.csv
-  gpg --encrypt --recipient $EMAIL $JOMAE_DIR/password.csv
+  gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
   rm $JOMAE_DIR/password.csv
 ;;
 "edit") ##
   gpg --decrypt --output $JOMAE_DIR/password.csv $JOMAE_DIR/password.csv.gpg
-  $EDITOR $JOMAE_DIR/password.csv
-  gpg --encrypt --recipient $EMAIL $JOMAE_DIR/password.csv
+  $JOMAE_EDITOR $JOMAE_DIR/password.csv
+  gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
   rm $JOMAE_DIR/password.csv
 ;;
 "help" | *)
