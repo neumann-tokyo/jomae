@@ -3,7 +3,7 @@ set -Ceu
 
 ARGS=${@:2}
 EMAIL="kbaba1001@users.noreply.github.com"
-JOMAE_DIR=$HOME/.jomae
+JOMAE_DIR=/mnt/g/マイドライブ/パスワード
 EDITOR=vim
 
 case ${1} in
@@ -14,7 +14,7 @@ case ${1} in
   rm $JOMAE_DIR/password.csv
 ;;
 "search" | "s") ##
-  gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2}
+  gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2} | head
 ;;
 "id") ##
   jomae search ${2} | cut -d "," -f 2
