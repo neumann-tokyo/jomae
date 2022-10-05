@@ -23,9 +23,6 @@ case ${1} in
 "password" | "p") ##
   jomae search ${2} | cut -d "," -f 3
 ;;
-"test")
-  [ -z $ARGS ] && echo "hi"
-;;
 "generate" | "g") ##
   if [ -z $ARGS ] 2>/dev/null; then
     pwgen -y 20 1
