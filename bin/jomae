@@ -15,7 +15,7 @@ case ${1} in
   rm $JOMAE_DIR/password.csv
 ;;
 "search" | "s") ##
-  gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2} | head
+  gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2} | head | sed -e "s/,/\n/g" | sed 1~4i----
 ;;
 "id") ##
   jomae search ${2} | cut -d "," -f 2
