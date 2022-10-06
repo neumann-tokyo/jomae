@@ -8,22 +8,22 @@ if [ -z $JOMAE_EMAIL ] || [ -z $JOMAE_DIR ] || [ -z $JOMAE_EDITOR ]; then
 fi
 
 case ${1} in
-"setup") ##
+"setup") ## You need to run this command for the first time
   mkdir -p $JOMAE_DIR
   echo "url,id,password,memo" > $JOMAE_DIR/password.csv
   gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
   rm $JOMAE_DIR/password.csv
 ;;
-"search" | "s") ##
+"search" | "s") ## You can search database
   gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2} | head | sed -e "s/,/\n/g" | sed 1~4i----
 ;;
-"id") ##
+"id") ## You can get id for searching result
   jomae search ${2} | cut -d "," -f 2
 ;;
-"password" | "p") ##
+"password" | "p") ## You can get password for searching result
   jomae search ${2} | cut -d "," -f 3
 ;;
-"generate" | "g") ##
+"generate" | "g") ## You can get a random password
   if [ -z $ARGS ] 2>/dev/null; then
     pwgen -y 20 1
   elif [ "$2" -eq "$2" ] 2>/dev/null; then # $2 is integer
@@ -32,13 +32,13 @@ case ${1} in
     pwgen $ARGS 1
   fi
 ;;
-"add") ##
+"add") ## You can add new password. You need to use this format: "url,id,password,memo"
   gpg --decrypt --output $JOMAE_DIR/password.csv $JOMAE_DIR/password.csv.gpg
   echo ${2} >> $JOMAE_DIR/password.csv
   gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
   rm $JOMAE_DIR/password.csv
 ;;
-"edit") ##
+"edit") ## You can edit password.csv
   gpg --decrypt --output $JOMAE_DIR/password.csv $JOMAE_DIR/password.csv.gpg
   $JOMAE_EDITOR $JOMAE_DIR/password.csv
   gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv

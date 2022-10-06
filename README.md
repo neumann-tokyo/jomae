@@ -2,6 +2,20 @@
 
 A dead-simple password management tool by gpg
 
+## setup
+
+```
+sudo apt install gpg pwgen
+```
+
+## install
+
+Please git clone this repository, and edit PATH in your `.bashrc` and stuff:
+
+```
+export PATH=/path/to/jomae/bin:$PATH
+```
+
 ## Config
 
 You need to define next environment variables:
@@ -19,4 +33,6 @@ jomae add "url,id,password,memo"
 jomae search "google"
 jomae id "google"
 jomae password "google"
+
+jomae help  ## See more documents
 ```
