@@ -10,18 +10,23 @@ fi
 case ${1} in
 "setup") ## You need to run this command for the first time
   mkdir -p $JOMAE_DIR
-  echo "url,id,password,memo" > $JOMAE_DIR/password.csv
-  gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
-  rm $JOMAE_DIR/password.csv
+  tempdir=$(mktemp -d)
+  echo "url,id,password,memo" > $tempdir/password.csv
+  gpg --encrypt --recipient $JOMAE_EMAIL $tempdir/password.csv
+  mv $tempdir/password.csv.gpg $JOMAE_DIR
+  rm -r $tempdir
 ;;
-"search" | "s") ## You can search database
-  gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2} | head | sed -e "s/,/\n/g" | sed 1~4i----
+"search-flat" | "sf" ) ## You can search on database and see the result as flat
+  gpg --decrypt $JOMAE_DIR/password.csv.gpg 2>/dev/null | grep -i -E ${2} | head
+;;
+"search" | "s") ## You can search on database and see the readable result
+  jomae search-flat ${2} | sed -e "s/,/\n/g" | sed 1~4i----
 ;;
 "id") ## You can get id for searching result
-  jomae search ${2} | cut -d "," -f 2
+  jomae search-flat ${2} | cut -d "," -f 2
 ;;
 "password" | "p") ## You can get password for searching result
-  jomae search ${2} | cut -d "," -f 3
+  jomae search-flat ${2} | cut -d "," -f 3
 ;;
 "generate" | "g") ## You can get a random password
   if [ -z $ARGS ] 2>/dev/null; then
@@ -33,16 +38,20 @@ case ${1} in
   fi
 ;;
 "add") ## You can add new password. You need to use this format: "url,id,password,memo"
-  gpg --decrypt --output $JOMAE_DIR/password.csv $JOMAE_DIR/password.csv.gpg
-  echo ${2} >> $JOMAE_DIR/password.csv
-  gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
-  rm $JOMAE_DIR/password.csv
+  tempdir=$(mktemp -d)
+  gpg --decrypt --output $tempdir/password.csv $JOMAE_DIR/password.csv.gpg
+  echo ${2} >> $tempdir/password.csv
+  gpg --encrypt --recipient $JOMAE_EMAIL $tempdir/password.csv
+  mv $tempdir/password.csv.gpg $JOMAE_DIR
+  rm -r $tempdir
 ;;
 "edit") ## You can edit password.csv
-  gpg --decrypt --output $JOMAE_DIR/password.csv $JOMAE_DIR/password.csv.gpg
-  $JOMAE_EDITOR $JOMAE_DIR/password.csv
-  gpg --encrypt --recipient $JOMAE_EMAIL $JOMAE_DIR/password.csv
-  rm $JOMAE_DIR/password.csv
+  tempdir=$(mktemp -d)
+  gpg --decrypt --output $tempdir/password.csv $JOMAE_DIR/password.csv.gpg
+  $JOMAE_EDITOR $tempdir/password.csv
+  gpg --encrypt --recipient $JOMAE_EMAIL $tempdir/password.csv
+  mv $tempdir/password.csv.gpg $JOMAE_DIR
+  rm -r $tempdir
 ;;
 "help" | *)
   (
